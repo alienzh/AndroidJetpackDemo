@@ -1,9 +1,12 @@
 package com.mars.alien.base;
 
+import android.content.Context;
 import android.util.Log;
 
+import com.mars.alien.BuildConfig;
 import com.mars.alien.utils.ContextUtils;
 import com.mars.alien.utils.Strings;
+import com.tencent.bugly.crashreport.CrashReport;
 
 public class MApplication extends ContextUtils {
 
@@ -26,6 +29,20 @@ public class MApplication extends ContextUtils {
         } else {
             // TODO: 2019/2/12
         }
+
+        initBugly();
+    }
+
+    private void initBugly() {
+        Context context = getApplicationContext();
+        // 获取当前包名
+        String packageName = context.getPackageName();
+        // 获取当前进程名
+        String processName = getCurrentProcessName(context);
+        // 设置是否为上报进程
+        CrashReport.UserStrategy strategy = new CrashReport.UserStrategy(context);
+        strategy.setUploadProcess(processName == null || processName.equals(packageName));
+        CrashReport.initCrashReport(getApplicationContext(), "262eb985e0", BuildConfig.DEBUG, strategy);
     }
 
     public ActivityLifecycleHelper getActivityLifecycleHelper() {
